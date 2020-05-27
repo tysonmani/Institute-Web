@@ -1,24 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { lazy, Suspense } from 'react';
 import './App.css';
+import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 function App() {
+
+  const Home = lazy(() => import('./components/Home/Home'));
+  const Login = lazy(() => import('./components/Login/Login'));
+  const DashboardSideNav = lazy(() => import('./components/DashboardSideNav/DashboardSideNav'));
+  const DashboardHeader = lazy(() => import('./components/DashboardHeader/DashboardHeader'));
+  const Dashboard = lazy(() => import('./components/Dashboard/Dashboard'));
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <CssBaseline />
+      <Suspense fallback={<div>Loading...</div>}>
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/">
+              <Redirect to="/home"/>
+            </Route>
+            <Route exact path="/home" component={Home} />
+            <Route exact path="/login">
+              <Login />
+            </Route>
+            <Route exact path="/dashboard">
+              <DashboardSideNav>
+              <DashboardHeader />
+              </DashboardSideNav>
+            </Route>
+            <Route exact path="/dashboard/home">
+              <Dashboard />
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      </Suspense>
     </div>
   );
 }
