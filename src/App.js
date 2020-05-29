@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import './App.css';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import LazyLoader from './components/LazyLoader/LazyLoader';
 
 function App() {
 
@@ -13,7 +14,7 @@ function App() {
   return (
     <div>
       <CssBaseline />
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={LazyLoader()}>
           <Switch>
             <Route exact path="/">
               <Redirect to="/home"/>
@@ -22,8 +23,10 @@ function App() {
             <Route exact path="/login">
               <Login />
             </Route>
-            <Route exact path="/dashboard">
-              <DashboardSideNav />
+            <Route path="/dashboard">
+              <DashboardSideNav>
+                <NotFound />
+              </DashboardSideNav>
             </Route>
             <Route component={NotFound} />
           </Switch>
