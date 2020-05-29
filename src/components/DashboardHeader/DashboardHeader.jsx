@@ -1,5 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import { useHistory, useLocation } from "react-router-dom";
+import './DashboardHeader.css';
 
 function DashboardHeader() {
 
@@ -58,7 +59,6 @@ useEffect(() => {
     }
 
     return (
-        <div>
             <nav className="navbar navbar-expand-md navbar-light">
                 <div id="main">
                     <span className="openbutton" onClick={openNav}>&#9776;</span>
@@ -80,7 +80,6 @@ useEffect(() => {
                     </ul>
                 </div>
             </nav >
-        </div >
     )
 }
 

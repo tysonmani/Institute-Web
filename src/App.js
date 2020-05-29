@@ -2,7 +2,6 @@ import React, { lazy, Suspense } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Redirect, Switch } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 
@@ -26,7 +25,9 @@ function App() {
               <Login />
             </Route>
             <Route exact path="/dashboard">
-              <DashboardSideNav />
+              <DashboardSideNav>
+              <DashboardHeader />
+              </DashboardSideNav>
             </Route>
             <Route exact path="/dashboard/home">
               <Dashboard />
