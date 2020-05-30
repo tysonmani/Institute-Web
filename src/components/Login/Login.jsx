@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 import { Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
 import Button from '@material-ui/core/Button';
 import PersonIcon from '@material-ui/icons/Person';
-import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 
 function Login() {
 
@@ -79,7 +78,7 @@ function Login() {
                             </form>
                         </div>
                     </div>
-                    <div className="col-xs-12 col-sm-12 col-md-12 col-lg-4"></div>
+                    <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4"></div>
                 </div>
             </div>
             <Modal isOpen={isModalOpen} toggle={toggleModal}>
