@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -21,9 +21,8 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import StarBorder from '@material-ui/icons/StarBorder';
 import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
-import { deepPurple } from '@material-ui/core/colors';
 import ChildRoutes from '../ChildRoutes/ChildRoutes';
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -90,10 +89,6 @@ const useStyles = makeStyles((theme) => ({
     nested: {
         paddingLeft: theme.spacing(4),
     },
-      purple: {
-        color: theme.palette.getContrastText(deepPurple[500]),
-        backgroundColor: deepPurple[500],
-      },
 }));
 
 
@@ -102,8 +97,29 @@ function DashboardSideNav(props) {
     const theme = useTheme();
     const [open, setOpen] = React.useState(true);
     const [openList, setOpenList] = React.useState(false);
+    const [loggedUser, setloggedUser] = useState(null);
 
     let history = useHistory();
+    let location = useLocation();
+
+    let loggedInStatus = JSON.parse(localStorage.getItem('loggedIn') || 'false');
+
+
+    useEffect(() => {
+        console.log(history);
+        if (loggedInStatus === false) {
+            history.push(
+                {
+                    pathname: "/home"
+                }
+            )
+        }
+        else {
+            let userName = localStorage.getItem('loggedUser') ? localStorage.getItem('loggedUser') : location.state.loggedUser;
+            console.log(userName);
+            setloggedUser(userName);
+        }
+    }, []);
 
     const handleClick = () => {
         setOpenList(!openList);
@@ -148,6 +164,16 @@ function DashboardSideNav(props) {
         )
     }
 
+    const logoutHandler = () => {
+        history.push(
+            {
+                pathname: '/login'
+            }
+        );
+        localStorage.removeItem('loggedUser');
+        localStorage.removeItem('loggedIn');
+    }
+
     return (
         <div className={classes.root}>
             <CssBaseline />
@@ -170,7 +196,8 @@ function DashboardSideNav(props) {
                     <Typography className={classes.title} style={{ cursor: "pointer" }} onClick={instituteWebHome} variant="h6" noWrap>
                         <i className="fa fa-graduation-cap"></i>Institute-Web
             </Typography>
-                    <Avatar className={classes.purple}>N</Avatar>
+                    <Avatar style={{ width: "30px", height: "30px" }} src="/broken-image.jpg" />&nbsp;&nbsp;
+                    {loggedUser}
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -220,6 +247,10 @@ function DashboardSideNav(props) {
                             </ListItem>
                         </List>
                     </Collapse>
+                    <ListItem button onClick={logoutHandler}>
+                        <ListItemIcon><i style={{ fontSize: "30px" }} className="fas fa-sign-out-alt" ></i></ListItemIcon>
+                        <ListItemText primary="Logout" />
+                    </ListItem>
                 </List>
                 <Divider />
             </Drawer>
