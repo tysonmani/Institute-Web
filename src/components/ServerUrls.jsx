@@ -1,0 +1,1 @@
+export const baseUrl = 'https://institute-management-system.herokuapp.com';

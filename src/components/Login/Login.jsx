@@ -5,11 +5,12 @@ import { useHistory } from "react-router-dom";
 import { Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
 import Button from '@material-ui/core/Button';
 import PersonIcon from '@material-ui/icons/Person';
+import { baseUrl } from '../ServerUrls';
 
 function Login() {
 
-    const [Username, setUsername] = useState('');
-    const [Password, setPassword] = useState('');
+    const [MobileNumber, setMobileNumber] = useState('');
+    const [OTP, setOTP] = useState('');
     const [ErrorStatus, setErrorStatus] = useState(null);
     const [isModalOpen, setisModalOpen] = useState(false);
 
@@ -20,19 +21,31 @@ function Login() {
     }, []);
 
     const mySubmitHandler = () => {
-        console.log(Username, Password);
-        // const logindetails = { "userName": Username, "password": Password };
-        // axios.post('http://138.201.253.230:8080/user/login', logindetails, { headers: { "Application": "biFrost" } })
-        //     .then(response => {
-        //         console.log(response, history);
-        //         toggleModal();
-        //     })
-        //     .catch(error => {
-        //         console.log(error, error.response, error.message, error.request);
-        //         setErrorStatus(error.response.data);
-        //     })
+        console.log(MobileNumber, OTP);
+        const logindetails = { "mobileNumber": MobileNumber };
+        axios.post(baseUrl + '/institute/user/login', logindetails)
+            .then(response => {
+                console.log(response, history);
                 toggleModal();
+            })
+            .catch(error => {
+                console.log(error, error.response, error.message, error.request);
+                setErrorStatus(error.response.data);
+            })
+        toggleModal();
     }
+
+    const getOtpHandler = () => {
+        console.log(MobileNumber);
+    }
+
+    const signUpHandler = () => {
+        history.push(
+            {
+                pathname: '/signUp',
+            }
+        );
+    } 
 
     const toggleModal = () => {
         setisModalOpen(!isModalOpen);
@@ -40,12 +53,12 @@ function Login() {
 
     const myRouteHandler = () => {
         localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('loggedUser', Username);
+        localStorage.setItem('loggedUser', MobileNumber);
         history.push(
             {
                 pathname: '/dashboard',
                 state: {
-                    loggedUser: Username
+                    loggedUser: MobileNumber
                 }
             }
         );
@@ -62,16 +75,19 @@ function Login() {
                             <h5 style={{ color: "#B99E01" }}><i className="fa fa-graduation-cap"></i>Institute-<span style={{ color: "black" }}>Web</span></h5>
                             <h6 style={{ color: "#B99E01" }}>Log<span style={{ color: "black" }}>in</span></h6><br />
                             <form>
-                                <input placeholder="Username" type="text" value={Username} onChange={e => {
-                                    setUsername(e.target.value);
+                                <Button onClick={getOtpHandler} disabled={MobileNumber.length != 10} style={{ fontSize: "60%", float: "right" }} variant="contained" color="primary">Send Otp</Button><br /><div style={{ marginBottom: "12px" }} />
+                                <input placeholder="MobileNumber" type="number" value={MobileNumber} onChange={e => {
+                                    setMobileNumber(e.target.value);
                                     setErrorStatus(null);
-                                }} /><br /><div style={{ marginTop: "2px" }} />
-                                <input placeholder="Password" type="password" value={Password} onChange={e => {
-                                    setPassword(e.target.value);
+                                }} />
+                                <br /><div style={{ marginTop: "2px" }} />
+                                <input placeholder="OTP" type="number" value={OTP} onChange={e => {
+                                    setOTP(e.target.value);
                                     setErrorStatus(null);
                                 }} /><br /><br />
-                                <button onClick={mySubmitHandler} className="button button1" type="button" disabled={Username === '' || Password === ''}>Login</button><br /><br />
+                                <button onClick={mySubmitHandler} className="button button1" type="button" disabled={MobileNumber === '' || MobileNumber.length != 10 || OTP === ''}>Login</button><br /><br />
                                 {ErrorStatus ? <p style={{ color: "red" }}>{ErrorStatus}</p> : null}
+                                <span><Button onClick={signUpHandler} style={{ fontSize: "60%", float: "right" }} variant="contained" color="primary">New User ?</Button></span><br/><br/>
                                 <span>
                                     <p style={{ fontSize: "80%", color: "#B99E01" }}>Institute-Web v1.0<br />
                                         <span style={{ color: "black" }}>Institute-Web Limited© 2020</span></p>
@@ -83,8 +99,8 @@ function Login() {
                 </div>
             </div>
             <Modal isOpen={isModalOpen} toggle={toggleModal}>
-                <ModalHeader cssModule={{'modal-title': 'w-100 text-center'}} toggle={toggleModal}>
-                    <Button style={{ fontSize: "60%"}} variant="contained" color="primary">Roles</Button>
+                <ModalHeader cssModule={{ 'modal-title': 'w-100 text-center' }} toggle={toggleModal}>
+                    <Button style={{ fontSize: "60%" }} variant="contained" color="primary">Roles</Button>
                 </ModalHeader>
                 <ModalBody>
                     <div className="row">
@@ -119,3 +135,5 @@ function Login() {
 }
 
 export default Login
+
+
