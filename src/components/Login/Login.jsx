@@ -21,16 +21,17 @@ function Login() {
 
     const mySubmitHandler = () => {
         console.log(Username, Password);
-        const logindetails = { "userName": Username, "password": Password };
-        axios.post('http://138.201.253.230:8080/user/login', logindetails, { headers: { "Application": "biFrost" } })
-            .then(response => {
-                console.log(response, history);
+        // const logindetails = { "userName": Username, "password": Password };
+        // axios.post('http://138.201.253.230:8080/user/login', logindetails, { headers: { "Application": "biFrost" } })
+        //     .then(response => {
+        //         console.log(response, history);
+        //         toggleModal();
+        //     })
+        //     .catch(error => {
+        //         console.log(error, error.response, error.message, error.request);
+        //         setErrorStatus(error.response.data);
+        //     })
                 toggleModal();
-            })
-            .catch(error => {
-                console.log(error, error.response, error.message, error.request);
-                setErrorStatus(error.response.data);
-            })
     }
 
     const toggleModal = () => {
