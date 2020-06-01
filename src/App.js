@@ -11,6 +11,7 @@ function App() {
   const SignUp = lazy(() => import('./components/SignUp/SignUp'));
   const DashboardSideNav = lazy(() => import('./components/DashboardSideNav/DashboardSideNav'));
   const NotFound = lazy(() => import('./components/NotFound/NotFound'));
+  const LoginSignUpOtpService = lazy(() => import('./components/Services/LoginSignUpOtpService'));
 
   return (
     <div>
@@ -22,7 +23,11 @@ function App() {
             </Route>
             <Route exact path="/home" component={Home} />
             <Route exact path="/login">
-              <Login />
+            <LoginSignUpOtpService>
+              {(myLoginHandler,getOtpHandler) => (
+              <Login myLoginHandler={myLoginHandler} getOtpHandler={getOtpHandler} />
+              )}
+            </LoginSignUpOtpService>
             </Route>
             <Route exact path="/signUp">
               <SignUp />

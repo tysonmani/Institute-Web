@@ -1,88 +1,17 @@
 import React, { useState } from 'react';
 import "./Login.css";
-import axios from 'axios';
-import { useHistory } from "react-router-dom";
 import { Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
 import Button from '@material-ui/core/Button';
 import PersonIcon from '@material-ui/icons/Person';
-import { baseUrl } from '../ServerUrls';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import { useHistory } from "react-router-dom";
 
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
-
-function Login() {
+function Login(props) {
 
     let history = useHistory();
 
     const [MobileNumber, setMobileNumber] = useState('');
     const [OTP, setOTP] = useState('');
     const [isModalOpen, setisModalOpen] = useState(false);
-    const [MessageHandler, setMessageHandler] = useState({ message: '', success: true });
-
-    const [open, setOpen] = React.useState(false);
-
-    const handleClick = () => {
-        setOpen(true);
-    };
-
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setOpen(false);
-    };
-
-    const mySubmitHandler = () => {
-        console.log(MobileNumber, OTP);
-        const logindetails = { "mobileNumber":MobileNumber, "otp":OTP, "type":"LOGIN"};
-        axios.post(baseUrl + '/institute/user/otp/verify', logindetails, {headers: {'Authorization':'Basic bmFyYXNpbW1hbjoxMjM0NTY4OQ=='}})
-            .then(response => {
-                console.log(response);
-                if(response.data.success === true)
-                {
-                    setMessageHandler({ ...MessageHandler, message: response.data.data.message, status: true });
-                    toggleModal();
-                }
-                else
-                {
-                    setMessageHandler({ ...MessageHandler, message: response.data.message, status: false });
-                }
-                handleClick();
-            })
-            .catch(error => {
-                console.log(error, error.response, error.message, error.request);
-                setMessageHandler({ ...MessageHandler, message: error.response.data.message, status: false });
-                handleClick();
-            })
-    }
-
-    const getOtpHandler = () => {
-        console.log(MobileNumber);
-        const logindetails = { "mobileNumber": MobileNumber };
-        axios.post(baseUrl + '/institute/user/login', logindetails, { headers: { 'Authorization': 'Basic bmFyYXNpbW1hbjoxMjM0NTY4OQ==' } })
-            .then(response => {
-                console.log(response);
-                if(response.data.success === true)
-                {
-                    setMessageHandler({ ...MessageHandler, message: response.data.data.message, status: true });
-                }
-                else
-                {
-                    setMessageHandler({ ...MessageHandler, message: response.data.message, status: false });
-                }
-                handleClick();
-            })
-            .catch(error => {
-                console.log(error, error.response, error.message, error.request);
-                setMessageHandler({ ...MessageHandler, message: error.response.data.message, status: false });
-                handleClick();
-            })
-    }
 
     const signUpHandler = () => {
         history.push(
@@ -120,7 +49,11 @@ function Login() {
                             <h5 style={{ color: "#B99E01" }}><i className="fa fa-graduation-cap"></i>Institute-<span style={{ color: "black" }}>Web</span></h5>
                             <h6 style={{ color: "#B99E01" }}>Log<span style={{ color: "black" }}>in</span></h6><br />
                             <form>
-                                <Button onClick={getOtpHandler} disabled={MobileNumber.length !== 10} style={{ fontSize: "60%", float: "right" }} variant="contained" color="primary">Send Otp</Button><br /><div style={{ marginBottom: "12px" }} />
+                                <Button onClick={props.getOtpHandler(
+                                    {
+                                        "mobileNumber": MobileNumber
+                                    }
+                                )} disabled={MobileNumber.length !== 10} style={{ fontSize: "60%", float: "right" }} variant="contained" color="primary">Send Otp</Button><br /><div style={{ marginBottom: "12px" }} />
                                 <input placeholder="MobileNumber" type="number" value={MobileNumber} onChange={e => {
                                     setMobileNumber(e.target.value);
                                 }} />
@@ -128,7 +61,18 @@ function Login() {
                                 <input placeholder="OTP" type="number" value={OTP} onChange={e => {
                                     setOTP(e.target.value);
                                 }} /><br /><br />
-                                <button onClick={mySubmitHandler} className="button button1" type="button" disabled={MobileNumber === '' || MobileNumber.length !== 10 || OTP === ''}>Login</button><br /><br />
+                                <button onClick={props.myLoginHandler(
+                                    {
+                                        "firstName":null,
+                                        "lastName":null,
+                                        "emailId":null,
+                                        "mobileNumber":MobileNumber,
+                                        "dateOfBirth":null,
+                                        "role":null, 
+                                        "otp":OTP, 
+                                        "type":"LOGIN"
+                                    }
+                                )} className="button button1" type="button" disabled={MobileNumber === '' || MobileNumber.length !== 10 || OTP === ''}>Login</button><br /><br />
                                 <span><Button onClick={signUpHandler} style={{ fontSize: "60%", float: "right" }} variant="contained" color="primary">New User ?</Button></span><br /><br />
                                 <span>
                                     <p style={{ fontSize: "80%", color: "#B99E01" }}>Institute-Web v1.0<br />
@@ -172,20 +116,6 @@ function Login() {
                     <Button style={{ fontSize: "70%" }} variant="contained" color="secondary" onClick={toggleModal}>Cancel</Button>
                 </ModalFooter>
             </Modal>
-            <Snackbar anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-            }} open={open} autoHideDuration={3000} onClose={handleClose}>
-                {
-                MessageHandler.status === true ?
-                    <Alert onClose={handleClose} severity="success">
-                       {MessageHandler.message}
-                    </Alert> :
-                    <Alert onClose={handleClose} severity="error">
-                        {MessageHandler.message}
-                    </Alert>
-                }
-            </Snackbar>
         </div>
     )
 }
