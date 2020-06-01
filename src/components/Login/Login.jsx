@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import "./Login.css";
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
@@ -18,13 +18,8 @@ function Login() {
 
     let history = useHistory();
 
-    useEffect(() => {
-        console.log(history, history.location);
-    }, []);
-
     const [MobileNumber, setMobileNumber] = useState('');
     const [OTP, setOTP] = useState('');
-    // const [ErrorStatus, setErrorStatus] = useState(null);
     const [isModalOpen, setisModalOpen] = useState(false);
     const [MessageHandler, setMessageHandler] = useState({ message: '', success: true });
 
@@ -44,17 +39,26 @@ function Login() {
 
     const mySubmitHandler = () => {
         console.log(MobileNumber, OTP);
-        // const logindetails = { "mobileNumber": MobileNumber };
-        // axios.post(baseUrl + '/institute/user/login', logindetails, {headers: {'Authorization':'Basic bmFyYXNpbW1hbjoxMjM0NTY4OQ=='}})
-        //     .then(response => {
-        //         console.log(response, history);
-        //         toggleModal();
-        //     })
-        //     .catch(error => {
-        //         console.log(error, error.response, error.message, error.request);
-        //         setErrorStatus(error.response.data);
-        //     })
-        toggleModal();
+        const logindetails = { "mobileNumber":MobileNumber, "otp":OTP, "type":"LOGIN"};
+        axios.post(baseUrl + '/institute/user/otp/verify', logindetails, {headers: {'Authorization':'Basic bmFyYXNpbW1hbjoxMjM0NTY4OQ=='}})
+            .then(response => {
+                console.log(response);
+                if(response.data.success === true)
+                {
+                    setMessageHandler({ ...MessageHandler, message: response.data.data.message, status: true });
+                    toggleModal();
+                }
+                else
+                {
+                    setMessageHandler({ ...MessageHandler, message: response.data.message, status: false });
+                }
+                handleClick();
+            })
+            .catch(error => {
+                console.log(error, error.response, error.message, error.request);
+                setMessageHandler({ ...MessageHandler, message: error.response.data.message, status: false });
+                handleClick();
+            })
     }
 
     const getOtpHandler = () => {
@@ -62,14 +66,20 @@ function Login() {
         const logindetails = { "mobileNumber": MobileNumber };
         axios.post(baseUrl + '/institute/user/login', logindetails, { headers: { 'Authorization': 'Basic bmFyYXNpbW1hbjoxMjM0NTY4OQ==' } })
             .then(response => {
-                console.log(response, history);
-                setMessageHandler({ ...MessageHandler, message: response.data.data.message, status: true });
+                console.log(response);
+                if(response.data.success === true)
+                {
+                    setMessageHandler({ ...MessageHandler, message: response.data.data.message, status: true });
+                }
+                else
+                {
+                    setMessageHandler({ ...MessageHandler, message: response.data.message, status: false });
+                }
                 handleClick();
             })
             .catch(error => {
                 console.log(error, error.response, error.message, error.request);
-                // setErrorStatus(error.response.data);
-                setMessageHandler({ ...MessageHandler, message: error.response.data, status: false });
+                setMessageHandler({ ...MessageHandler, message: error.response.data.message, status: false });
                 handleClick();
             })
     }
@@ -110,18 +120,15 @@ function Login() {
                             <h5 style={{ color: "#B99E01" }}><i className="fa fa-graduation-cap"></i>Institute-<span style={{ color: "black" }}>Web</span></h5>
                             <h6 style={{ color: "#B99E01" }}>Log<span style={{ color: "black" }}>in</span></h6><br />
                             <form>
-                                <Button onClick={getOtpHandler} disabled={MobileNumber.length != 10} style={{ fontSize: "60%", float: "right" }} variant="contained" color="primary">Send Otp</Button><br /><div style={{ marginBottom: "12px" }} />
+                                <Button onClick={getOtpHandler} disabled={MobileNumber.length !== 10} style={{ fontSize: "60%", float: "right" }} variant="contained" color="primary">Send Otp</Button><br /><div style={{ marginBottom: "12px" }} />
                                 <input placeholder="MobileNumber" type="number" value={MobileNumber} onChange={e => {
                                     setMobileNumber(e.target.value);
-                                    // setErrorStatus(null);
                                 }} />
                                 <br /><div style={{ marginTop: "2px" }} />
                                 <input placeholder="OTP" type="number" value={OTP} onChange={e => {
                                     setOTP(e.target.value);
-                                    // setErrorStatus(null);
                                 }} /><br /><br />
-                                <button onClick={mySubmitHandler} className="button button1" type="button" disabled={MobileNumber === '' || MobileNumber.length != 10 || OTP === ''}>Login</button><br /><br />
-                                {/* {ErrorStatus ? <p style={{ color: "red" }}>{ErrorStatus}</p> : null} */}
+                                <button onClick={mySubmitHandler} className="button button1" type="button" disabled={MobileNumber === '' || MobileNumber.length !== 10 || OTP === ''}>Login</button><br /><br />
                                 <span><Button onClick={signUpHandler} style={{ fontSize: "60%", float: "right" }} variant="contained" color="primary">New User ?</Button></span><br /><br />
                                 <span>
                                     <p style={{ fontSize: "80%", color: "#B99E01" }}>Institute-Web v1.0<br />
@@ -170,7 +177,7 @@ function Login() {
                 horizontal: 'left',
             }} open={open} autoHideDuration={3000} onClose={handleClose}>
                 {
-                MessageHandler.status == true ?
+                MessageHandler.status === true ?
                     <Alert onClose={handleClose} severity="success">
                        {MessageHandler.message}
                     </Alert> :
